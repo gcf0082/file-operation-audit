@@ -19,7 +19,7 @@ description: 文件操作安全审计：漏洞检测
 - `references/upload.md` - 文件上传
 - `references/download.md` - 文件下载
 - `references/read.md` - 文件读取
-- `references/delete.md` - 文件删除
+- `references/path-traversal.md` - 跨目录
 
 ## 报告格式
 

@@ -11,38 +11,6 @@ if (type.equals("image/jpeg")) {
 // 修复：校验扩展名+Content-Type+文件头
 ```
 
-## 跨目录上传
-未净化用户输入导致目录遍历
-```java
-// 漏洞：用户输入直接拼接路径
-String filename = request.getParameter("filename");
-File file = new File(uploadDir, filename);  // 可能是 ../../../etc/passwd
-// 修复：校验 filename 不含 .. ，使用真实路径规范化
-Path resolved = basePath.resolve(filename).normalize();
-if (!resolved.startsWith(basePath)) throw new SecurityException();
-```
-
-## 跨目录删除（上传场景）
-上传后自动删除原文件时发生目录遍历
-```java
-// 漏洞：删除旧文件时未校验路径
-String filename = request.getParameter("filename");
-deleteFile(uploadDir + filename);  // 可能是 ../../../important.txt
-```
-
-## 压缩包跨目录
-解压时未校验内部路径导致目录遍历
-```java
-// 漏洞：解压时未处理 ../ 路径
-ZipEntry entry = zipFile.getNextEntry();
-while (entry != null) {
-    File outFile = new File(outputDir, entry.getName());
-    // 未校验 outFile 是否在 outputDir 外
-    extract(entry, outFile);
-}
-```
-修复：解压前校验路径
-
 ## 高压缩比 DoS
 解压时无限制展开导致资源耗尽
 ```java
@@ -59,7 +27,7 @@ while ((entry = zipFile.getNextEntry()) != null) {
 // 漏洞：直接写入
 InputStream is = request.getInputStream();
 FileOutputStream fos = new FileOutputStream(file);
-is.transferTo(fos);  // 无大小限制
+is.transferTo(fos);
 // 修复：限制最大 size
 ```
 
@@ -75,19 +43,18 @@ Document doc = dbf.newDocumentBuilder().parse(file);
 ## 临时文件未删除
 上传后临时文件未清理
 ```java
-// 漏洞：使用临时文件但未删除
+// 漏洞
 File temp = File.createTempFile("upload_", ".tmp");
-temp.deleteOnExit();  // JVM 退出才删
+temp.deleteOnExit();
 // 修复：显式删除或使用内存流
 ```
 
 ## 泄露绝对路径
 错误信息包含服务器路径
 ```java
-// 漏洞：异常信息泄露路径
+// 漏洞
 catch (Exception e) {
     response.getWriter().write("上传失败: " + e.getMessage());
-    // e.getMessage() 可能包含 /var/www/uploads/
 }
 // 修复：只返回通用错误信息
 ```
@@ -97,7 +64,6 @@ catch (Exception e) {
 ```java
 // 漏洞：未校验完整性
 FileInputStream fis = new FileInputStream(uploadedFile);
-// 直接使用，未校验是否被篡改
 // 修复：计算并校验 hash 或使用数字签名
 ```
 
