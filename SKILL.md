@@ -20,6 +20,7 @@ description: 文件操作安全审计：漏洞检测
 - `references/download.md` - 文件下载
 - `references/read.md` - 文件读取
 - `references/path-traversal.md` - 跨目录
+- `references/temp-file-cleanup.md` - 临时文件清理
 
 ## 报告格式
 

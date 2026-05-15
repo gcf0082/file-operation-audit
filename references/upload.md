@@ -40,15 +40,6 @@ Document doc = dbf.newDocumentBuilder().parse(file);
 // 修复：限制解析时间、内存、实体数量
 ```
 
-## 临时文件未删除
-上传后临时文件未清理
-```java
-// 漏洞
-File temp = File.createTempFile("upload_", ".tmp");
-temp.deleteOnExit();
-// 修复：显式删除或使用内存流
-```
-
 ## 泄露绝对路径
 错误信息包含服务器路径
 ```java
